@@ -1,16 +1,17 @@
 package com.xgsama.ibatis.mapper;
 
-import com.mysql.cj.jdbc.MysqlDataSource;
 import com.xgsama.ibatis.entity.User;
-import com.xgsama.ibatis.util.DataSourceUtil;
-import org.apache.ibatis.mapping.Environment;
+import com.xgsama.ibatis.plugin.Page;
+import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import org.apache.ibatis.transaction.TransactionFactory;
-import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
+import org.junit.Before;
 import org.junit.Test;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * UserMapperTest
@@ -20,19 +21,44 @@ import org.junit.Test;
  */
 public class UserMapperTest {
 
+  public Configuration configuration;
+  public SqlSessionFactory factory;
+
+
+  @Before
+  public void init() throws IOException {
+    SqlSessionFactoryBuilder factoryBuilder = new SqlSessionFactoryBuilder();
+    factory = factoryBuilder.build(Resources.getResourceAsStream("mybatis-config.xml"));
+    configuration = factory.getConfiguration();
+
+  }
+
   @Test
-  public void test() throws Exception {
+  public void testPagePlugin() {
+    SqlSession sqlSession = factory.openSession();
+    UserMapper mapper = sqlSession.getMapper(UserMapper.class);
 
-    TransactionFactory transactionFactory = new JdbcTransactionFactory();
-    Environment environment = new Environment("development", transactionFactory, DataSourceUtil.getMysqlDataSource());
-    Configuration configuration = new Configuration(environment);
-    configuration.addMapper(UserMapper.class);
-    SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(configuration);
+    User u = new User();
+    u.setId(1);
+    List<User> users = mapper.getUsers(u, new Page(2, 1));
 
-    SqlSession sqlSession = sqlSessionFactory.openSession();
+    for (User user : users) {
+      System.out.println(user);
+    }
+    sqlSession.commit();
 
-    User user = sqlSession.selectOne("com.xgsama.ibatis.mapper.UserMapper.getById", 1);
+    SqlSession sqlSession2 = factory.openSession();
+    UserMapper mapper2 = sqlSession2.getMapper(UserMapper.class);
 
-    System.out.println(user);
+    User u2 = new User();
+    u2.setId(1);
+    List<User> users2 = mapper.getUsers(u2, new Page(2, 1));
+
+    for (User user : users2) {
+      System.out.println(user);
+    }
+
+
+    System.out.println();
   }
 }

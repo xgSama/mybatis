@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--suppress SqlDialectInspection -->
+<mapper namespace="com.xgsama.ibatis.mapper.UserMapper">
+
+  <cache-ref namespace="com.xgsama.ibatis.mapper.UserMapper"/>
+
+  <select id="getUsers" resultType="com.xgsama.ibatis.entity.User">
+    select *
+    from user
+    where 1 = 1
+    <if test="user.id!=null">
+      and id = #{user.id}
+    </if>
+
+  </select>
+  <select id="getById" resultType="com.xgsama.ibatis.entity.User">
+    select *
+    from user
+    where id = #{id};
+  </select>
+
+
+  <update id="updateName">
+    update user
+    set username=#{arg1}
+    where id = #{arg0}
+  </update>
+</mapper>

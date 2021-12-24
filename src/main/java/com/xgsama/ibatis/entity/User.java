@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.io.Serializable;
+
 /**
  * User
  *
@@ -15,7 +17,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class User {
+public class User implements Serializable {
   // id | username | address  | enabled | favorites
   private Integer id;
   private String username;

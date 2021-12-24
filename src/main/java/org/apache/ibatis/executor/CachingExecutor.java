@@ -92,6 +92,7 @@ public class CachingExecutor implements Executor {
   @Override
   public <E> List<E> query(MappedStatement ms, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql)
       throws SQLException {
+    /* 先走缓存，缓存存在且不使用ResultHandler时候返回缓存，否则使用delegate去查询 */
     Cache cache = ms.getCache();
     if (cache != null) {
       flushCacheIfRequired(ms);
